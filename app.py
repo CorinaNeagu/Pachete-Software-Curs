@@ -23,7 +23,7 @@ if 'page' not in st.session_state:
 buttons = [
     ("📈 Statistics", 'descriptiveStat'),
     ("📊 Heat Map", 'heatMap'),
-    ("🌵 Spike Map", 'bubbleMap'),
+    ("🌵 Spike Map", 'spikeMap'),
     ("🎞️ Animated Map", 'animatedMap'),
     ("🔁 Flow Map", 'flowMap')
 ]
@@ -38,7 +38,7 @@ for col, (label, target_page) in zip(cols, buttons):
 
 # --- Page Loader ---
 pages = {
-    "bubbleMap": "bubbleMap",
+    "spikeMap": "spikeMap",
     "heatMap": "heatMap",
     "animatedMap": "animatedMap",
     "descriptiveStat": "descriptiveStat",
