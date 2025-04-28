@@ -10,28 +10,30 @@ def run():
     data.columns = data.columns.str.strip()
     data['DATE'] = pd.to_datetime(data['DATE'], errors='coerce')
     
-    # Remove rows where DATE or MAG are missing
+    # Removing invalid rows
     data = data.dropna(subset=['DATE', 'MAG'])
-
-    # Remove rows where MAG is negative or zero (invalid magnitudes)
     data = data[data['MAG'] > 0]
     
-    # Create Plotly animated map
     fig = px.scatter_mapbox(data, 
                          lat='LAT', 
                          lon='LON', 
-                         color='MAG',  # Color by magnitude
-                         size='MAG',   # Size by magnitude
-                         hover_name='DATE',  # Show date on hover
+                         color='MAG',  
+                         size='MAG',   
+                         hover_name='DATE',  
                          animation_frame=data['DATE'].dt.year.astype(str),
-                         zoom=1,
+                         zoom=3,
                          height=600,
                          title="Earthquake Activity Over Time",
-                         mapbox_style="carto-positron",  # Better-looking background
+                         mapbox_style="carto-positron",  
                         )
 
-    # Show the animated map in Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-    if st.button("Back to Landing Page"):
-        st.session_state.page = 'landing'
+    with st.expander("Map Details & Interpretation"):
+        st.markdown("""
+            Animated maps often use time as the variable to show how phenomena change over time. For example, an earthquake map might animate over years or months, 
+            showing where and when earthquakes occurred, and their magnitudes or frequencies. This animation helps emphasize patterns, hotspots, or trends that are not as easily seen on a single snapshot.
+            In this case, the earthquake animation shows the evolution of earthquake events, illustrating clusters, trends, and patterns over the years.
+                    """)
+
+ 

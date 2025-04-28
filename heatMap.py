@@ -6,7 +6,6 @@ from folium.plugins import MarkerCluster, HeatMap
 
 @st.cache_data
 def load_data():
-     # Load the dataset
     data = pd.read_csv("dataIN/Carpathians_Earthquakes.csv", index_col=0)
     data.reset_index(inplace=True)
 
@@ -52,12 +51,8 @@ def run():
     apply_button = st.sidebar.button("Apply Filters", on_click=apply_filters)
     clear_button = st.sidebar.button("Clear Filters", on_click=clear_filters)
 
-    # Display filtered data
-    st.write("### Filtered Earthquake Data")
-    st.dataframe(st.session_state.filtered_data[['DATE', 'TIME', 'LAT', 'LON', 'MAG', 'DEPTH']])
-
-    # Map initialization
-    earthquake_map = folium.Map(location=[20, 0], zoom_start=2)
+    #Map initialization
+    earthquake_map = folium.Map(location=[20, 0], zoom_start=3)
 
     # Marker Clusters on the map
     marker_cluster = MarkerCluster().add_to(earthquake_map)
@@ -88,31 +83,32 @@ def run():
     HeatMap(heat_data).add_to(earthquake_map)
 
     # Display the map
-    st.title("Earthquake Dashboard")
+    st.title("Earthquake Heat & Cluster Map")
     st_folium(earthquake_map, width=800, height=500)
 
     with st.expander("Map Details & Interpretation"):
         st.markdown("""
     **What's on the map?**
-    - Each marker represents an individual earthquake within your selected filters.
+    - Each marker represents an individual earthquake within the selected filters.
     - The **popup** on each marker shows detailed info: location, magnitude, date, and time.
     - The **heatmap layer** represents the density and magnitude of earthquakes in a region.
-
+  
     **Interpreting the map:**
     - **Brighter or redder areas** on the heatmap suggest clusters of higher magnitude earthquakes.
     - **Dense marker clusters** in a region (especially after filtering) might indicate tectonic hotspots or seismic zones.
     - Use the sidebar to change the year or magnitude range to analyze how activity shifts over time.
 
-    **Zooming in/out:**
-    - Use your mouse or trackpad to explore different regions.
-    - Zoom in on clusters to explore localized patterns more closely.
+    **Density (Spatial Clustering):**
+    - Groupings based on the physical proximity of data points
+    - In earthquake data, clustering can reveal significant patterns, such as:
+        - **Seismic Hotspots**: Clusters of high-magnitude earthquakes in specific regions, indicating active seismic zones or tectonic plate boundaries (e.g., Vrancea Seismic Zone)
+        - **Earthquake Frequency**: If a region has a lot of clustering over time, it may indicate that certain areas are more prone to seismic activity
+        - **Seismic Patterns**: By looking at how clusters evolve over time, you might notice whether seismic activity increases or decreases in a particular area.
 
-    **Pro tips:**
-    - Try filtering for high magnitudes (e.g. MAG ≥ 5.5) to isolate major seismic events.
-    - Explore the same region across different years to analyze changes over time.
+    **Clustering with Marker Clusters:**
+    - Individual points are grouped together based on proximity, making it easier to visualize concentrations of events
+        - **Zooming in**: As you zoom in, the markers will break apart, showing you exactly how many events are clustered in a region.
+        - **Zooming out**: Clusters may form together into one larger marker, representing many events in that area.
     """)
 
-
-    if st.button("Back to Landing Page"):
-        st.session_state.page = 'landing'
 

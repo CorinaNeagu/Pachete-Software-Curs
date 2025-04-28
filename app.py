@@ -1,53 +1,68 @@
 import streamlit as st
+import importlib
 
-# Initialize session state for page navigation if it doesn't exist
+def load_css(file_name):
+    try:
+        with open(file_name) as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    except FileNotFoundError:
+        st.warning("CSS file not found, using default styles.")
+
+# Load the custom CSS
+load_css("app.css")
+
+# App Header
+st.markdown("<h1 style='text-align: center;'>🌍 Earthquake Visualizer</h1>", unsafe_allow_html=True)
+st.markdown("<h2>Navigate to a section:</h2>", unsafe_allow_html=True)
+
+# --- Initialize Session ---
 if 'page' not in st.session_state:
     st.session_state.page = 'landing'
 
-# Landing page
-if st.session_state.page == 'landing':
-    st.title("Choose a page to navigate to:")
+# --- Custom Button Layout ---
+buttons = [
+    ("📊 Heat Map", 'heatMap'),
+    ("🫧 Bubble Map", 'bubbleMap'),
+    ("📈 Statistics", 'descriptiveStat'),
+    ("🎞️ Animated Map", 'animatedMap'),
+    ("🔁 Flow Map", 'flowMap')
+]
 
-    # Buttons to navigate to different pages
-    if st.button("See Heat Map"):
-        st.session_state.page = 'mapping'  
+# --- Button Container ---
+cols = st.columns(len(buttons))
+for col, (label, target_page) in zip(cols, buttons):
+    with col:
+        if st.button(f" {label} ", key=label):
+            st.session_state.page = target_page  
+            st.rerun()  # Trigger a rerun of the app after button press
 
-    if st.button("See Bubble Map"):
-        st.session_state.page = 'bubbleMap'  
+# --- Page Loader ---
+pages = {
+    "bubbleMap": "bubbleMap",
+    "heatMap": "heatMap",
+    "animatedMap": "animatedMap",
+    "descriptiveStat": "descriptiveStat",
+    "flowMap": "flowMap"
+}
 
-    if st.button("See Statistics"):
-        st.session_state.page = 'otherPage'
-
-    if st.button("See Animated Map"):
-        st.session_state.page = 'animatedMap'
-
-# Bubble Map Page
-elif st.session_state.page == 'bubbleMap':
+def load_page(page_name):
     try:
-        import bubbleMap
-        bubbleMap.run()
+        # Dynamically load the module and run it
+        module = importlib.import_module(pages[page_name])
+        module.run()
     except Exception as e:
-        st.error(f"Error loading Bubble Map: {e}")
+        st.error(f"🚨 Error loading `{page_name}`: {e}")
 
-# Heat Map Page (Mapping)
-if st.session_state.page == 'mapping':
-    try:
-        import heatMap
-        heatMap.run()
-    except Exception as e:
-        st.error(f"Error loading Heat Map: {e}")
+# --- Route to Page ---
+if 'clear_content' not in st.session_state:
+    st.session_state.clear_content = False
 
-elif st.session_state.page == 'animatedMap':
-    try:
-        import animatedMap
-        animatedMap.run()
-    except Exception as e:
-        st.error(f"Error loading Animated Map: {e}")
+# If the page is changed, reset the placeholder (clear content)
+if st.session_state.clear_content:
+    st.empty()
+    st.session_state.clear_content = False  # Reset the flag
 
-# Statistics Page
-elif st.session_state.page == 'otherPage':
-    try:
-        import otherPage
-        otherPage.run()
-    except Exception as e:
-        st.error(f"Error loading Statistics: {e}")
+# --- Route to the selected page ---
+if st.session_state.page in pages:
+    st.session_state.clear_content = True
+    load_page(st.session_state.page)

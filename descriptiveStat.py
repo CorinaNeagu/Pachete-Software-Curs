@@ -2,24 +2,13 @@ import streamlit as st
 import pandas as pd
 
 def run():
-    # Back to landing page button
-    if st.button("⬅ Back to Landing Page"):
-        st.session_state.page = 'landing'
-    
-    # App title
     st.title("🌍 Earthquake Statistics Dashboard")
     st.markdown("Explore earthquake statistics and data visualizations.")
 
-    # Load the data
     data = pd.read_csv("dataOUT/earthquakes.csv")
     
-    # Clean column names (strip spaces)
     data.columns = data.columns.str.strip()
-
-    # Convert DATE column to datetime format
     data['DATE'] = pd.to_datetime(data['DATE'], errors='coerce')
-
-    # Drop rows where DATE is missing
     data = data.dropna(subset=['DATE'])
 
     # General Stats Section
@@ -50,6 +39,12 @@ def run():
 
     st.markdown("---")
 
+    st.subheader("⚡ Top 5 Largest Earthquakes")
+    top_earthquakes = data[['DATE', 'LAT', 'LON', 'MAG']].sort_values(by='MAG', ascending=False).head(5)
+    st.write(top_earthquakes)
+
+    st.markdown("---")
+
     # Earthquakes Over Time Chart
     st.markdown('<h2 style="font-size:40px; color: #2d3e50;">🌍 Earthquakes Over Time</h2>', unsafe_allow_html=True)
     earthquakes_by_year = data.groupby(data['DATE'].dt.year).size()  # Count earthquakes per year
@@ -76,6 +71,14 @@ def run():
 
     st.markdown("---")
 
+    st.subheader("🌍 Earthquakes by Depth Range")
+    depth_bins = [0, 50, 100, 300, 500]
+    depth_labels = ["Shallow (<50 km)", "Intermediate (50-100 km)", "Deep (100-300 km)", "Very Deep (>300 km)"]
+    data['DEPTH_RANGE'] = pd.cut(data['DEPTH'], bins=depth_bins, labels=depth_labels, right=False)
+    depth_distribution = data['DEPTH_RANGE'].value_counts().sort_index()
+    st.bar_chart(depth_distribution)
+    
+    st.markdown("---")
 
-    if st.button("Back to Landing Page"):
-        st.session_state.page = 'landing'
+
+
