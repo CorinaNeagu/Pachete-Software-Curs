@@ -21,9 +21,9 @@ if 'page' not in st.session_state:
 
 # --- Custom Button Layout ---
 buttons = [
-    ("📊 Heat Map", 'heatMap'),
-    ("🫧 Bubble Map", 'bubbleMap'),
     ("📈 Statistics", 'descriptiveStat'),
+    ("📊 Heat Map", 'heatMap'),
+    ("🌵 Spike Map", 'bubbleMap'),
     ("🎞️ Animated Map", 'animatedMap'),
     ("🔁 Flow Map", 'flowMap')
 ]
