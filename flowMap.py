@@ -23,6 +23,11 @@ def run():
     data = load_data()
 
     filtered_data = sidebar(data)
+    if 'DATETIME' not in filtered_data.columns:
+        filtered_data['DATETIME'] = pd.to_datetime(
+            filtered_data['DATE'].dt.strftime('%Y-%m-%d') + ' ' + filtered_data['TIME'].astype(str),
+            errors='coerce'
+        )
     if filtered_data.empty:
         st.sidebar.warning("No data available for the selected filters.")
         return
