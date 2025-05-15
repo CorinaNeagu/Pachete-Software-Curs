@@ -3,7 +3,7 @@
 import streamlit as st
 import pandas as pd
 
-# Function to handle sidebar filtering
+# Sidebar filtering
 def sidebar(data):
     if "filters_applied" not in st.session_state:
         st.session_state.filters_applied = False
@@ -11,8 +11,14 @@ def sidebar(data):
     if "filtered_data" not in st.session_state:
         st.session_state.filtered_data = data
 
-    # Sidebar filtering options
     st.sidebar.title("Filter Earthquake Data")
+
+    original_len = len(data)
+    data = data[(data['MAG'] > 0) & (data['DEPTH'] > 0)]
+    cleaned_len = len(data)
+
+    if cleaned_len < original_len:
+        st.sidebar.info(f"{original_len - cleaned_len} anomalous records with non-positive magnitude or depth were removed.")
 
     # Magnitude filter slider
     min_mag = st.sidebar.slider(

@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+from sidebar import sidebar 
 
 @st.cache_data
 def load_data():
@@ -21,48 +22,13 @@ def load_data():
 def run():
     data = load_data()
 
+    filtered_data = sidebar(data)
+    if filtered_data.empty:
+        st.sidebar.warning("No data available for the selected filters.")
+        return
+
     # Title
     st.title("Earthquake Flow Map")
-
-    if "filters_applied" not in st.session_state:
-        st.session_state.filters_applied = False
-
-    if "filtered_data" not in st.session_state:
-        st.session_state.filtered_data = data
-
-    # Sidebar filtering options
-    st.sidebar.title("Filter Earthquake Data")
-    min_mag = st.sidebar.slider("Minimum Magnitude", 
-                                min_value=float(data['MAG'].min()), 
-                                max_value=float(data['MAG'].max()), 
-                                value=4.0)
-    years = sorted(data['DATETIME'].dt.year.unique())
-    start_year = st.sidebar.selectbox("Start Year", options=years, index=0)
-    end_year = st.sidebar.selectbox("End Year", options=years, index=len(years)-1)
-
-    # Apply filters based on user input
-    def apply_filters():
-        filtered_data = data[
-            (data['MAG'] >= min_mag) &
-            (data['DATETIME'].dt.year >= start_year) &  
-            (data['DATETIME'].dt.year <= end_year)
-        ]
-        st.session_state.filtered_data = filtered_data
-        st.session_state.filters_applied = True
-        st.sidebar.success("Filters Applied!")
-
-    # Clear filters logic
-    def clear_filters():
-        st.session_state.filtered_data = data
-        st.session_state.filters_applied = False
-        st.sidebar.success("Filters Cleared!")
-
-    # Apply and Clear buttons (in the sidebar)
-    apply_button = st.sidebar.button("Apply Filters", on_click=apply_filters)
-    clear_button = st.sidebar.button("Clear Filters", on_click=clear_filters)
-
-    # Apply filters if selected
-    filtered_data = st.session_state.filtered_data
 
     # Sort data by full datetime
     filtered_data = filtered_data.sort_values(by='DATETIME').reset_index(drop=True)
@@ -95,7 +61,7 @@ def run():
             name=f"frame_{i}"
         ))
 
-    # Adding empty initial trace for the map
+    # Adding empty initial trace fo r the map
     fig.add_trace(go.Scattermap(
         mode='lines',
         lon=[],
@@ -108,7 +74,7 @@ def run():
     # Update layout and buttons for animation
     fig.update_layout(
         mapbox_style="carto-positron",  
-        mapbox_zoom=3,  
+        mapbox_zoom=4,  
         mapbox_center={"lat": filtered_data['LAT'].mean(), "lon": filtered_data['LON'].mean()},
         margin={"r": 0, "t": 50, "l": 0, "b": 0},
         title="Earthquake Flow Map (Chronological Path)",
@@ -126,7 +92,6 @@ def run():
 
     # Display the map animation
     st.plotly_chart(fig, use_container_width=True)
-
     st.subheader("Filtered Earthquake Data")
 
     earthquake_count = len(filtered_data)

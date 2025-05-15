@@ -30,32 +30,31 @@ def run():
         radius=5000,  
         get_fill_color="""
             [
-                68 + (MAG / 10) * (253 - 68),
-                1 + (MAG / 10) * (231 - 1),
-                84 + (MAG / 10) * (37 - 84),
-                200
+                 MAG * 25.5,
+                 255 - MAG * 25.5,         
+                 MAG * 25.5,                     
+                 200                 
             ]
             """,
         pickable=True,
         auto_highlight=True,
     )
 
-    # Set up the view for the map with enhanced orientation and tilt
+    # Set up the view for the map with orientation and tilt
     view_state = pdk.ViewState(
-        longitude=filtered_data["LON"].mean(),  # Center the view around the average longitude
-        latitude=filtered_data["LAT"].mean(),   # Center the view around the average latitude
+        longitude=filtered_data["LON"].mean(),  
+        latitude=filtered_data["LAT"].mean(),   
         zoom=3,  
         pitch=50,  
         bearing=30,  
     )
 
-    # Create the PyDeck Deck object with the 3D column layer
+    # Create the PyDeck Deck map with the 3D columns
     deck = pdk.Deck(
         layers=[layer],
         initial_view_state=view_state,
         tooltip={"text": "Magnitude: {MAG}"},
     )
 
-    # Show the PyDeck map in the Streamlit app
     st.pydeck_chart(deck)
 

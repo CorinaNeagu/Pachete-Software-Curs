@@ -6,11 +6,9 @@ def run():
     # Load data
     data = pd.read_csv("dataOUT/earthquakes.csv")
     
-    # Clean up column names and date
     data.columns = data.columns.str.strip()
     data['DATE'] = pd.to_datetime(data['DATE'], errors='coerce')
     
-    # Removing invalid rows
     data = data.dropna(subset=['DATE', 'MAG'])
     data = data[data['MAG'] > 0]
     
@@ -21,7 +19,7 @@ def run():
                          size='MAG',   
                          hover_name='DATE',  
                          animation_frame=data['DATE'].dt.year.astype(str),
-                         zoom=3,
+                         zoom=4,
                          height=600,
                          title="Earthquake Activity Over Time",
                          mapbox_style="carto-positron",  
