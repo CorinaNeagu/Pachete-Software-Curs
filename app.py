@@ -20,8 +20,8 @@ if 'page' not in st.session_state:
 
 buttons = [
     ("📈 Statistics", 'descriptiveStat'),
-    ("📊 Heat Map", 'heatMap'),
     ("🌵 Spike Map", 'spikeMap'),
+    ("📊 Heat Map", 'heatMap'),
     ("🎞️ Animated Map", 'animatedMap'),
     ("🔁 Flow Map", 'flowMap')
 ]

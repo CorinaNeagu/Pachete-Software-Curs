@@ -16,7 +16,7 @@ def sidebar(data):
     cleaned_len = len(data)
 
     if cleaned_len < original_len:
-        st.sidebar.info(f"{original_len - cleaned_len} anomalous records with non-positive magnitude or depth were removed.")
+        st.sidebar.info(f"{original_len - cleaned_len} anomalous records with negative magnitude or depth were removed.")
 
     # Magnitude filter slider
     min_mag = st.sidebar.slider(

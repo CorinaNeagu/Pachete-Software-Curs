@@ -34,6 +34,7 @@ def run():
 
     # Title
     st.title("Earthquake Flow Map")
+    st.markdown("Please zoom in to Central & Eastern Europe")
 
     # Sort data by full datetime
     filtered_data = filtered_data.sort_values(by='DATETIME').reset_index(drop=True)
